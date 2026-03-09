@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+
+sqlmodel
+psycopg[binary,pool]
+pydantic-settings
+python-multipart
+
+langchain
+langchain-google-genai
+google-cloud-documentai
+rapidfuzz
+
+python-jose[cryptography]
+passlib[bcrypt]
