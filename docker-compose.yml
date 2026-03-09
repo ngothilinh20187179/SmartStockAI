@@ -1,0 +1,26 @@
+services:  
+  # Database service definition
+  db:
+    image: postgres:16-alpine             # Use the lightweight Alpine Linux version of PostgreSQL 16
+    container_name: ${DB_NAME}_container  # Custom name for the container for easier management
+    restart: always                       # Automatically restart the container if it stops unexpectedly   
+    
+    # Environment variables to initialize the database
+    environment:
+      POSTGRES_USER: ${DB_USER}         # Database administrative username
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # Database password (keep this secure!)
+      POSTGRES_DB: ${DB_NAME}           # Initial database name to be created
+    
+    # Map the container's internal port to the host machine's port
+    # Format: "host_port:container_port"
+    ports:
+      - "${DB_PORT}:5432"
+    
+    # Persist data by mapping a named volume to the internal Postgres data directory
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+# Define the named volumes used in the services section
+volumes:
+  # This volume ensures data persists even if the container is removed
+  postgres_data:
