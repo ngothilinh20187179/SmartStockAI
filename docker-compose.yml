@@ -2,23 +2,31 @@ services:
   # Database service definition
   db:
     image: postgres:16-alpine             # Use the lightweight Alpine Linux version of PostgreSQL 16
-    container_name: ${DB_NAME}_container  # Custom name for the container for easier management
-    restart: always                       # Automatically restart the container if it stops unexpectedly   
-    
-    # Environment variables to initialize the database
+    container_name: ${DB_NAME}_container
+    restart: always  
     environment:
-      POSTGRES_USER: ${DB_USER}         # Database administrative username
-      POSTGRES_PASSWORD: ${DB_PASSWORD} # Database password (keep this secure!)
-      POSTGRES_DB: ${DB_NAME}           # Initial database name to be created
-    
-    # Map the container's internal port to the host machine's port
-    # Format: "host_port:container_port"
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "${DB_PORT}:5432"
-    
-    # Persist data by mapping a named volume to the internal Postgres data directory
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data 
+
+  # FastAPI Backend service definition
+  backend:
+    build: ./backend
+    container_name: smartstock_backend
+    command: >
+      sh -c "alembic upgrade head && 
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    # command: tail -f /dev/null
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
 
 # Define the named volumes used in the services section
 volumes:

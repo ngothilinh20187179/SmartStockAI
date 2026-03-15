@@ -1,7 +1,10 @@
+python-dotenv
 fastapi
 uvicorn[standard]
 
 sqlmodel
+alembic
+psutil
 psycopg[binary,pool]
 pydantic-settings
 python-multipart
