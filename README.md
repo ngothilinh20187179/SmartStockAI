@@ -34,19 +34,37 @@ cd SmartStockAI
 cp .env.example .env
 ```
 
-### 3. Start Database
+### 3. Start Database + Backend (Docker Compose)
+
+```bash
+docker-compose up -d
+```
+This will:
+- start PostgreSQL (with healthcheck)
+- run `alembic upgrade head`
+- run `python backend/scripts/check_db.py` (DB connectivity check)
+- run `python backend/scripts/seed.py` (seed demo users, idempotent)
+- start FastAPI at `http://localhost:8000`
+
+Test the sample API:
+```bash
+curl http://localhost:8000/api/users
+```
+
+#### (Optional) Run Backend locally (DB in Docker)
+If you prefer running FastAPI on your machine while keeping Postgres in Docker:
 
 ```bash
 docker-compose up -d db
-```
-
-### 4. Run Backend & Frontend
-
-```bash
-cd backend 
-source venv/bin/activate 
+cd backend
+source venv/bin/activate
+pip install -r requirements.txt
+python scripts/check_db.py
+python scripts/seed.py
 uvicorn app.main:app --reload
 ```
+
+### 4. Run Frontend
 
 ```bash
 cd frontend 
@@ -59,6 +77,7 @@ npm run dev
 ## 🏗️ Project Structure
 SmartStockAI - A fullstack application built as a monorepo with separate frontend, backend and AI services.
 
+```bash
 SmartStockAI/
 ├── backend/                # Primary FastAPI application source
 │   ├── app/                # Application core logic
@@ -71,6 +90,9 @@ SmartStockAI/
 │   ├── migrations/         # Database version control files (Alembic)
 │   │   └── versions/
 │   ├── alembic.ini
+│   ├── scripts/         
+│   │   ├── check_db.py      # DB connectivity check
+│   │   └── seed.py          # Seed demo data
 │   ├── Dockerfile
 │   └── requirements.txt    # Python dependencies
 ├── frontend/               # Next.js (TypeScript) - Modern Web Dashboard
@@ -85,3 +107,4 @@ SmartStockAI/
 ├── docker-compose.yml
 ├── .env
 └── .gitignore
+```

@@ -5,6 +5,7 @@ uvicorn[standard]
 sqlmodel
 alembic
 psutil
+asyncpg
 psycopg[binary,pool]
 pydantic-settings
 python-multipart

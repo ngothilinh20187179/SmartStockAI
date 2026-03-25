@@ -1,20 +1,25 @@
-import os
-from dotenv import load_dotenv
-from sqlmodel import create_engine, Session, SQLModel
+from collections.abc import AsyncGenerator
 
-load_dotenv()
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-DB_USER = os.getenv("POSTGRES_USER", "admin")
-DB_PASS = os.getenv("POSTGRES_PASSWORD", "my_very_secure_password_123")
-DB_NAME = os.getenv("POSTGRES_DB", "smartstock_db")
-DB_PORT = os.getenv("POSTGRES_PORT", "5432")
+from app.core.config import settings
 
-DB_HOST = os.getenv("DB_HOST", "localhost")
+# Async engine with asyncpg driver
+engine = create_async_engine(
+    settings.database_url,
+    echo=settings.debug,
+    pool_pre_ping=True,
+)
 
-DATABASE_URL = os.getenv("DATABASE_URL", f"postgresql+psycopg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+# Async session factory
+async_session_maker = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
-engine = create_engine(DATABASE_URL, echo=True)
-
-def get_session():
-    with Session(engine) as session:
+# Dependency for FastAPI routes
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker() as session:
         yield session
