@@ -1,0 +1,38 @@
+[
+    {
+        "unit_name": "each",
+        "unit_symbol": "ea"
+    },
+    {
+        "unit_name": "kilogram",
+        "unit_symbol": "kg"
+    },
+    {
+        "unit_name": "gram",
+        "unit_symbol": "g"
+    },
+    {
+        "unit_name": "litre",
+        "unit_symbol": "L"
+    },
+    {
+        "unit_name": "millilitre",
+        "unit_symbol": "mL"
+    },
+    {
+        "unit_name": "box",
+        "unit_symbol": "box"
+    },
+    {
+        "unit_name": "pack",
+        "unit_symbol": "pk"
+    },
+    {
+        "unit_name": "bottle",
+        "unit_symbol": "btl"
+    },
+    {
+        "unit_name": "can",
+        "unit_symbol": "can"
+    }
+]
