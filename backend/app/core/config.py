@@ -31,6 +31,19 @@ class Settings(BaseSettings):
     env_database_url: str | None = Field(default=None, validation_alias="DATABASE_URL")
     debug: bool = False
 
+    # Comma-separated origins, e.g. "http://localhost:3000,https://app.example.com"
+    cors_origins: str = Field(
+        default="http://localhost:3000,http://127.0.0.1:3000",
+        validation_alias="CORS_ORIGINS",
+    )
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        raw = self.cors_origins.strip()
+        if not raw:
+            return []
+        return [x.strip() for x in raw.split(",") if x.strip()]
+
     @property
     def database_url(self) -> str:
         raw = (self.env_database_url or "").strip()
