@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query"
 
+import { api } from "@/lib/api"
 import { queryKeys } from "@/lib/query-keys"
+import type { ProductsListParams, ProductsListResponse } from "@/types/products"
 
-export function useProducts(filters?: Record<string, unknown>) {
+export function useProducts(params?: ProductsListParams) {
   return useQuery({
-    queryKey: queryKeys.products.list(filters),
+    queryKey: queryKeys.products.list(params),
     queryFn: async () => {
-      // TODO: replace with api.get("/api/products", { params: filters })
-      return [] as const
+      const res = await api.get<ProductsListResponse>("/api/products", { params })
+      return res.data
     },
   })
 }
