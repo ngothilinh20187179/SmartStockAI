@@ -5,7 +5,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from backend.app.schemas.common import Pagination
+from app.schemas.common import Pagination
 
 
 class ProductRead(BaseModel):
