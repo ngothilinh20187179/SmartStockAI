@@ -1,9 +1,20 @@
 from uuid import UUID, uuid4
-from typing import Optional
+from typing import Any, Optional
 from decimal import Decimal
 from datetime import date
+
+from sqlalchemy import Column, Computed, Index
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlmodel import SQLModel, Field
+
 from .enums import ProductStatus
+
+_SEARCH_VECTOR_SQL = (
+    "to_tsvector('simple', coalesce(product_name, '') || ' ' || "
+    "coalesce(sku_code, '') || ' ' || "
+    "coalesce(product_code, '') || ' ' || "
+    "coalesce(barcode, ''))"
+)
 
 class Category(SQLModel, table=True):
     __tablename__ = "categories" # type: ignore
@@ -20,6 +31,13 @@ class Unit(SQLModel, table=True):
 
 class Product(SQLModel, table=True):
     __tablename__ = "products" # type: ignore
+    __table_args__ = (
+        Index(
+            "ix_products_search_vector",
+            "search_vector",
+            postgresql_using="gin",
+        ),
+    )
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     category_id: Optional[UUID] = Field(default=None, foreign_key="categories.id")
     base_unit_id: Optional[UUID] = Field(default=None, foreign_key="units.id")
@@ -41,6 +59,15 @@ class Product(SQLModel, table=True):
     is_batch_tracked: bool = Field(default=False)
     batch_number: Optional[str] = Field(default=None, max_length=50)
     expiry_date: Optional[date] = Field(default=None)
+    search_vector: Optional[Any] = Field(
+        default=None,
+        exclude=True,
+        sa_column=Column(
+            TSVECTOR,
+            Computed(_SEARCH_VECTOR_SQL, persisted=True),
+            nullable=False,
+        ),
+    )
 
 class ProductUnitConversion(SQLModel, table=True):
     __tablename__ = "product_unit_conversions" # type: ignore
